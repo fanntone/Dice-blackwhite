@@ -184,85 +184,89 @@
   .rc-spinner{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.15);
       border-top-color:var(--gold);animation:spin .8s linear infinite;}
   .rc-text{font-weight:800;font-size:17px;}
+  .lang-switch{position:fixed;right:14px;top:calc(env(safe-area-inset-top) + 14px);z-index:6;
+       width:auto;min-width:76px;padding:10px 12px;border-radius:999px;font-size:13px;
+       background:rgba(30,22,40,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
   @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <canvas id="cover"></canvas>
 <div id="dice3d"></div>
+<button id="langbtn" class="btn ghost sm lang-switch" type="button" onclick="cycleLang()">🌐 EN</button>
 
 <div id="app">
 
   <!-- HOME -->
   <section id="screen-home" class="screen active">
-    <h1 class="title" style="margin-top:12px">DICE<br>DUEL</h1>
-    <p class="subtitle">RED · BLACK · BIG · SMALL</p>
+    <h1 class="title" style="margin-top:12px" data-i18n-html="home.title">DICE<br>DUEL</h1>
+    <p class="subtitle" data-i18n="home.subtitle">RED · BLACK · BIG · SMALL</p>
     <div class="spacer"></div>
     <div class="stack">
-      <button class="btn" onclick="UI.go('create')">🎲 Create Room</button>
-      <button class="btn ghost" onclick="UI.go('join')">🔗 Join Room</button>
-      <button class="btn ghost" onclick="UI.openRules()">📖 How to Play</button>
+      <button class="btn" onclick="UI.go('create')" data-i18n="btn.create">🎲 Create Room</button>
+      <button class="btn ghost" onclick="UI.go('join')" data-i18n="btn.join">🔗 Join Room</button>
+      <button class="btn ghost" onclick="UI.openRules()" data-i18n="btn.rules">📖 How to Play</button>
     </div>
-    <p class="badge-mini">2–3 players online · mobile-friendly · please drink responsibly</p>
+    <p class="badge-mini" data-i18n="home.foot">2–3 players online · mobile-friendly · please drink responsibly</p>
   </section>
 
   <!-- CREATE -->
   <section id="screen-create" class="screen">
-    <h1 class="title" style="font-size:32px">Create Room</h1>
+    <h1 class="title" style="font-size:32px" data-i18n="create.title">Create Room</h1>
     <div class="panel stack">
-      <label class="fld">Your nickname
-        <input id="create-name" maxlength="8" placeholder="e.g. Alex" />
+      <label class="fld"><span data-i18n="nick.label">Your nickname</span>
+        <input id="create-name" maxlength="8" placeholder="e.g. Alex" data-i18n-ph="create.nickPh" />
       </label>
-      <label class="fld">Dice per player
+      <label class="fld"><span data-i18n="create.dice">Dice per player</span>
         <div class="row" id="dice-pick"></div>
       </label>
       <p class="err" id="create-err"></p>
-      <button class="btn" onclick="Net.createRoom()">Create & Enter</button>
-      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">Back</button>
+      <button class="btn" onclick="Net.createRoom()" data-i18n="create.submit">Create & Enter</button>
+      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')" data-i18n="back">Back</button>
     </div>
   </section>
 
   <!-- JOIN -->
   <section id="screen-join" class="screen">
-    <h1 class="title" style="font-size:32px">Join Room</h1>
+    <h1 class="title" style="font-size:32px" data-i18n="join.title">Join Room</h1>
     <div class="panel stack">
-      <label class="fld">Your nickname
-        <input id="join-name" maxlength="8" placeholder="e.g. Sam" />
+      <label class="fld"><span data-i18n="nick.label">Your nickname</span>
+        <input id="join-name" maxlength="8" placeholder="e.g. Sam" data-i18n-ph="join.nickPh" />
       </label>
-      <label class="fld">Room code
+      <label class="fld"><span data-i18n="code.label">Room code</span>
         <input id="join-code" class="code" maxlength="4" placeholder="ABCD" />
       </label>
       <p class="err" id="join-err"></p>
-      <button class="btn" id="join-btn" onclick="Net.joinRoom()">Join</button>
-      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">Back</button>
+      <button class="btn" id="join-btn" onclick="Net.joinRoom()" data-i18n="join.submit">Join</button>
+      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')" data-i18n="back">Back</button>
     </div>
   </section>
 
   <!-- LOBBY -->
   <section id="screen-lobby" class="screen">
-    <p class="subtitle">Room Code</p>
+    <p class="subtitle" data-i18n="lobby.codeLabel">Room Code</p>
     <div class="roomcode" id="lobby-code">----</div>
     <div class="row" style="max-width:300px">
-      <button class="btn gold sm" style="width:100%" onclick="Net.share()">Share Invite</button>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.copyCode()">Copy Code</button>
+      <button class="btn gold sm" style="width:100%" onclick="Net.share()" data-i18n="lobby.share">Share Invite</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.copyCode()" data-i18n="lobby.copy">Copy Code</button>
     </div>
     <div class="panel">
-      <p class="fld" style="margin:0 0 10px">Players (<span id="lobby-count">0</span>/3)</p>
+      <p class="fld" style="margin:0 0 10px" data-i18n-html="lobby.players">Players (<span id="lobby-count">0</span>/3)</p>
       <div class="plist" id="lobby-players"></div>
     </div>
     <div class="stack">
-      <button class="btn" id="lobby-start" onclick="Net.startGameClick()">Start Game</button>
-      <p class="hint" id="lobby-hint">Waiting for players… (at least 2)</p>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
+      <button class="btn" id="lobby-start" onclick="Net.startGameClick()" data-i18n="lobby.start">Start Game</button>
+      <p class="hint" id="lobby-hint" data-i18n="lobby.waitPlayers">Waiting for players… (at least 2)</p>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()" data-i18n="leaveRoom">Leave Room</button>
     </div>
   </section>
 
   <!-- GAME -->
   <section id="screen-game" class="screen" style="justify-content:flex-start;gap:14px;padding-top:8px">
     <div class="topbar">
-      <button class="btn ghost sm" onclick="UI.openRules()">Rules</button>
+      <button class="btn ghost sm" onclick="UI.openRules()" data-i18n="game.rules">Rules</button>
       <div class="turnpill" id="turn-pill">—</div>
-      <button class="btn ghost sm" onclick="Net.leave()">Leave</button>
+      <button class="btn ghost sm" onclick="Net.leave()" data-i18n="game.leave">Leave</button>
     </div>
 
     <div class="opps" id="opps"></div>
@@ -270,7 +274,7 @@
     <div class="reveal-banner" id="reveal-banner"></div>
 
     <div class="myarea">
-      <h3 id="my-label">Your dice</h3>
+      <h3 id="my-label" data-i18n="game.yourDice">Your dice</h3>
       <div class="dicewrap" id="my-dice" style="display:none"></div>
     </div>
 
@@ -283,14 +287,14 @@
   <!-- GAME OVER -->
   <section id="screen-over" class="screen">
     <div id="kill-wrap"></div>
-    <p class="subtitle">Loser</p>
+    <p class="subtitle" data-i18n="over.loserTitle">Loser</p>
     <div class="loser-name" id="over-loser">—</div>
     <p class="penalty" id="over-penalty"></p>
     <p class="hint" id="over-next"></p>
     <div class="stack">
-      <button class="btn" id="over-rematch" onclick="Net.rematchClick()">Play Again</button>
+      <button class="btn" id="over-rematch" onclick="Net.rematchClick()" data-i18n="over.rematch">Play Again</button>
       <p class="hint" id="over-hint"></p>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()" data-i18n="leaveRoom">Leave Room</button>
     </div>
   </section>
 
@@ -300,33 +304,18 @@
 <div id="rules" class="modal">
   <div class="panel rules">
     <button class="close-x" onclick="UI.closeRules()">×</button>
-    <h2>How to Play</h2>
-    <p class="hint" style="text-align:left">Dice colors: <span class="tag red">Red = 1, 4</span> <span class="tag">Black = 2, 3, 5, 6</span></p>
-    <ol>
-      <li>The starting player looks at their dice, then picks one of six calls:
-        <div>
-          <span class="tag red">Remove Red</span><span class="tag">Remove Black</span>
-          <span class="tag">Remove Big (4 5 6)</span><span class="tag">Remove Small (1 2 3)</span>
-          <span class="tag">Remove Odd (1 3 5)</span><span class="tag">Remove Even (2 4 6)</span>
-        </div>
-      </li>
-      <li>After the call, everyone reveals and removes the matching dice(<b>including the caller</b>).</li>
-      <li>Put remaining dice back, re-roll, and the next player repeats.</li>
-      <li>When a player runs out of dice → that player <b>loses</b>.</li>
-      <li>If someone is wiped out on the <b>opening round's first call</b> → <span style="color:var(--red2);font-weight:900">One-Hit Kill</span>, double penalty!</li>
-      <li>If 2+ players lose at once, the <b>last one</b> in order starts the next game.</li>
-    </ol>
-    <p class="hint">Please drink responsibly · 18+ only · don't drink and drive</p>
+    <h2 data-i18n="rules.h2">How to Play</h2>
+    <div data-i18n-html="rules.body"></div>
   </div>
 </div>
 
 <div id="offline-modal" class="modal">
   <div class="panel" style="max-width:420px;text-align:center">
-    <h2 style="color:var(--gold);margin:.2em 0;font-size:22px">⚠️ Player Offline</h2>
+    <h2 style="color:var(--gold);margin:.2em 0;font-size:22px" data-i18n="offline.title">⚠️ Player Offline</h2>
     <p id="off-text" class="hint" style="font-size:15px;line-height:1.6"></p>
     <div class="stack" style="margin-top:16px">
       <button class="btn" id="off-continue" onclick="Net.offlineContinue()">Keep Waiting</button>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()" data-i18n="leaveRoom">Leave Room</button>
     </div>
   </div>
 </div>
@@ -334,8 +323,8 @@
 <div id="reconnect" class="reconnect">
   <div class="rc-box">
     <div class="rc-spinner"></div>
-    <div class="rc-text">Reconnecting…</div>
-    <button class="btn ghost sm" onclick="Net.leave()">Back to Home</button>
+    <div class="rc-text" data-i18n="reconnect.text">Reconnecting…</div>
+    <button class="btn ghost sm" onclick="Net.leave()" data-i18n="reconnect.home">Back to Home</button>
   </div>
 </div>
 
@@ -343,6 +332,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="_i18nblock.js"></script>
 <script>
 /* ============================================================
    紅黑大小單雙 — 單檔多人骰子遊戲
@@ -352,14 +342,15 @@
 
 /* -------------------- 遊戲核心（純函式） -------------------- */
 const CALLS = {
-  red:   { key:'red',   label:'Remove Red', sub:'1, 4',     cls:'red',   test:v => v===1||v===4 },
-  black: { key:'black', label:'Remove Black', sub:'2 3 5 6',  cls:'black', test:v => !(v===1||v===4) },
-  big:   { key:'big',   label:'Remove Big', sub:'4 5 6',    cls:'',      test:v => v>=4 },
-  small: { key:'small', label:'Remove Small', sub:'1 2 3',    cls:'',      test:v => v<=3 },
-  odd:   { key:'odd',   label:'Remove Odd', sub:'1 3 5',    cls:'',      test:v => v%2===1 },
-  even:  { key:'even',  label:'Remove Even', sub:'2 4 6',    cls:'',      test:v => v%2===0 },
+  red:   { key:'red',   labelKey:'call.red',   sub:'1, 4',     cls:'red',   test:v => v===1||v===4 },
+  black: { key:'black', labelKey:'call.black', sub:'2 3 5 6',  cls:'black', test:v => !(v===1||v===4) },
+  big:   { key:'big',   labelKey:'call.big',   sub:'4 5 6',    cls:'',      test:v => v>=4 },
+  small: { key:'small', labelKey:'call.small', sub:'1 2 3',    cls:'',      test:v => v<=3 },
+  odd:   { key:'odd',   labelKey:'call.odd',   sub:'1 3 5',    cls:'',      test:v => v%2===1 },
+  even:  { key:'even',  labelKey:'call.even',  sub:'2 4 6',    cls:'',      test:v => v%2===0 },
 };
 const CALL_ORDER = ['red','black','big','small','odd','even'];
+const callText = call => t(call.labelKey || ('call.' + call.key));
 const REVEAL_MS = 3200;
 const TURN_SECONDS = 20;                  // 每回合喊牌倒數秒數
 const ID_PREFIX = 'rhds-';
@@ -527,7 +518,7 @@ const Net = {
   /* ---- 建立 / 還原 / 接手 房主 ---- */
   createRoom(){
     const name=(document.getElementById('create-name').value||'').trim();
-    if(!name) return UI.err('create-err','Please enter a nickname');
+    if(!name) return UI.err('create-err', t('err.nick'));
     myName=name; isHost=true; leaving=false; roomCode='';
     UI.err('create-err',''); Net._spawnHost(0, null, false);
   },
@@ -536,7 +527,7 @@ const Net = {
     const onCreate = document.getElementById('screen-create').classList.contains('active');
     if(attempt > 8){
       if(snap || keepG){ isHost=false; saveSession({roomCode,name:myName,role:'client'}); Net._startClientPeer(); return; } // 接手/還原失敗 → 改當玩家
-      if(onCreate) UI.err('create-err','Could not create room, please try again'); return;
+      if(onCreate) UI.err('create-err', t('err.createFail')); return;
     }
     if(!roomCode) roomCode = Net.genCode();
     try{ if(peer) peer.destroy(); }catch(e){}
@@ -569,7 +560,7 @@ const Net = {
         if(!snap && !keepG) roomCode = '';
         try{ peer.destroy(); }catch(_){}
         setTimeout(() => Net._spawnHost(attempt+1, snap, keepG), 700);
-      } else if(onCreate){ UI.err('create-err','Connection error: ' + e.type); }
+      } else if(onCreate){ UI.err('create-err', t('err.conn') + e.type); }
     });
   },
   _wireHost(){
@@ -584,7 +575,7 @@ const Net = {
     const _p = playerByConn(c.peer); if(_p) _p.lastSeen = Date.now();   // 任何訊息都算心跳
     if(msg.type === 'hb') return;
     if(msg.type === 'join'){
-      const key = msg.key, name = (msg.name||'Player').slice(0,8);
+      const key = msg.key, name = (msg.name||t('name.default')).slice(0,8);
       const existing = key && G.players.find(p=>p.key===key);
       if(existing){
         const wasOff = !existing.connected;
@@ -593,8 +584,8 @@ const Net = {
         if(wasOff && G.phase!=='lobby') Net._notice('online', existing.name);
         return;
       }
-      if(G.phase !== 'lobby') return c.send({ type:'reject', reason:'Game in progress, cannot join now' });
-      if(G.players.length >= 3) return c.send({ type:'reject', reason:'Room is full (max 3 players)' });
+      if(G.phase !== 'lobby') return c.send({ type:'reject', reasonKey:'reject.inProgress' });
+      if(G.players.length >= 3) return c.send({ type:'reject', reasonKey:'reject.full' });
       G.players.push({ key, name, connId:c.peer, connected:true, lastSeen:Date.now(), dice:[], count:0, removed:null });
       conns.set(c.peer, c); pushState();
     } else if(msg.type === 'call'){
@@ -614,7 +605,7 @@ const Net = {
   _notice(kind, name){
     const payload = { type:'notice', kind, name };
     conns.forEach(c => { try{ c.send(payload); }catch(e){} });
-    if(kind==='offline') showOfflineModal(name); else { hideOfflineModal(); UI.toast(name+' reconnected'); }
+    if(kind==='offline') showOfflineModal(name); else { hideOfflineModal(); UI.toast(t('toast.reconnected', {name})); }
   },
 
   /* 離線後「繼續」：房主移除離線者並續局；人數不足回大廳 */
@@ -641,8 +632,8 @@ const Net = {
   joinRoom(){
     const name=(document.getElementById('join-name').value||'').trim();
     const code=(document.getElementById('join-code').value||'').trim().toUpperCase();
-    if(!name) return UI.err('join-err','Please enter a nickname');
-    if(code.length!==4) return UI.err('join-err','Please enter the 4-letter room code');
+    if(!name) return UI.err('join-err', t('err.nick'));
+    if(code.length!==4) return UI.err('join-err', t('err.code'));
     UI.err('join-err',''); document.getElementById('join-btn').disabled=true;
     myName=name; isHost=false; roomCode=code; leaving=false; reconnectTries=0;
     saveSession({ roomCode, name, role:'client' });
@@ -655,7 +646,7 @@ const Net = {
       try{ if(conn && conn.open) conn.send({type:'hb'}); }catch(e){}   // 回送心跳給房主
       if(Date.now() - lastHostMsg > 6000){          // 6 秒沒收到房主訊息 → 視為房主消失
         lastHostMsg = Date.now() + 1e9;             // 暫停重複觸發
-        showReconnect(true, 'Lost connection to host, reconnecting…');
+        showReconnect(true, t('recon.lostHost'));
         try{ if(conn) conn.close(); }catch(e){}
         Net._startClientPeer();                     // 重連；房主真的不見 → 觸發接手
       }
@@ -681,8 +672,8 @@ const Net = {
     if(leaving || isHost) return;
     if(!view){                                    // 尚未成功進房（初次加入）
       reconnectTries++;
-      if(reconnectTries >= 5){ UI.err('join-err','Room not found (network blocked or wrong code)'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; return; }
-      UI.err('join-err', 'Connecting… (retry '+reconnectTries+'/5)');
+      if(reconnectTries >= 5){ UI.err('join-err', t('err.notFound')); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; return; }
+      UI.err('join-err', t('recon.connecting', {n:reconnectTries}));
       setTimeout(() => { if(!leaving) Net._startClientPeer(); }, 1600);
     } else {                                       // 曾在房內 → 房主可能離線
       if(e && e.type==='peer-unavailable') Net._onHostGone();
@@ -692,7 +683,7 @@ const Net = {
   _clientLost(){
     if(leaving || isHost) return;
     if(view && view.phase==='gameover') return;
-    showReconnect(true, 'Connection lost, reconnecting…');
+    showReconnect(true, t('recon.lost'));
     Net._scheduleReconnect();
   },
   _scheduleReconnect(){
@@ -705,10 +696,10 @@ const Net = {
     if(!msg || !msg.type) return;
     lastHostMsg = Date.now();                      // 任何房主訊息都算心跳
     if(msg.type==='hb') return;
-    if(msg.type==='reject'){ UI.err('join-err', msg.reason||'Couldn\'t join'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; UI.go('join'); return; }
+    if(msg.type==='reject'){ UI.err('join-err', msg.reasonKey ? t(msg.reasonKey) : (msg.reason||t('reject.cantJoin'))); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; UI.go('join'); return; }
     if(msg.type==='state'){ Net._resetJoinBtn(); reconnectTries=0; showReconnect(false); applyView(msg.state); }
     if(msg.type==='tick'){ if(view){ view.secondsLeft=msg.secondsLeft; view.paused=msg.paused; } updateCountdown(msg.secondsLeft, msg.paused); }
-    if(msg.type==='notice'){ if(msg.kind==='offline') showOfflineModal(msg.name); else { hideOfflineModal(); UI.toast(msg.name+' reconnected'); } }
+    if(msg.type==='notice'){ if(msg.kind==='offline') showOfflineModal(msg.name); else { hideOfflineModal(); UI.toast(t('toast.reconnected', {name:msg.name})); } }
   },
 
   /* ---- 房主離線 → 自動指派新房主（host migration） ---- */
@@ -718,14 +709,14 @@ const Net = {
     const others = view.players.map(p=>p.id).filter(id=>id!==view.hostId).sort();
     const successor = others[0];
     if(successor === myKey) Net._promoteToHost();
-    else { showReconnect(true, 'Host left, assigning a new host…'); Net._scheduleReconnect(); }
+    else { showReconnect(true, t('recon.hostLeft')); Net._scheduleReconnect(); }
   },
   _promoteToHost(){
     if(isHost || !view) return;
     isHost=true; clearTimeout(reconnectTimer); clearInterval(hostWatch); hostWatch=null;
     try{ if(conn) conn.close(); }catch(e){} try{ if(peer) peer.destroy(); }catch(e){}
     peer=conn=null; conns=new Map();
-    showReconnect(true, 'You are the new host, taking over…');
+    showReconnect(true, t('recon.takeover'));
     const v=view, callerKey=v.callerId;
     G = { phase:(v.phase==='revealing'?'calling':v.phase), startDice:v.startDice||5,
       players: v.players.map(p=>({ key:p.id, name:p.name, connId:null, connected:(p.id===myKey), dice:[], count:p.count||0, removed:null })),
@@ -735,7 +726,7 @@ const Net = {
     let ci = G.players.findIndex(p=>p.key===callerKey); if(ci<0) ci = G.players.findIndex(p=>p.key===myKey); G.callerIndex = ci<0?0:ci;
     if(G.phase==='calling'){ G.players.forEach(p=>{ if(!p.count) p.count=G.startDice; p.dice=rollN(p.count); }); G.secondsLeft=TURN_SECONDS; }
     saveSession({ roomCode, name:myName, role:'host' });
-    UI.toast('You are now the host');
+    UI.toast(t('toast.youHost'));
     Net._spawnHost(0, null, true);              // keepG：用現有 G 接手同房號
   },
 
@@ -745,11 +736,11 @@ const Net = {
   rematchClick(){ if(isHost) hostStartGame(G.nextStarterId); },
   share(){
     const url = location.origin + location.pathname + '?room=' + roomCode;
-    const data = { title:'Dice Duel', text:`Come play Dice Duel! Room code: ${roomCode}`, url };
+    const data = { title:t('share.title'), text:t('share.text', {code:roomCode}), url };
     if(navigator.share){ navigator.share(data).catch(()=>{}); }
-    else { navigator.clipboard?.writeText(url); UI.toast('Invite link copied'); }
+    else { navigator.clipboard?.writeText(url); UI.toast(t('toast.linkCopied')); }
   },
-  copyCode(){ navigator.clipboard?.writeText(roomCode); UI.toast('Code copied: ' + roomCode); },
+  copyCode(){ navigator.clipboard?.writeText(roomCode); UI.toast(t('toast.codeCopied', {code:roomCode})); },
   leave(){
     leaving=true; clearTimeout(reconnectTimer); clearInterval(hbTimer); clearInterval(hostWatch);
     if(isHost) hostStopTimer();
@@ -766,8 +757,8 @@ const Net = {
 
 function showOfflineModal(name){
   const m=document.getElementById('offline-modal'); if(!m) return;
-  m.querySelector('#off-text').textContent = `"${name}" went offline and may be reconnecting.`;
-  m.querySelector('#off-continue').textContent = isHost ? 'Remove & Continue' : 'Keep Waiting';
+  m.querySelector('#off-text').textContent = t('offline.text', {name});
+  m.querySelector('#off-continue').textContent = isHost ? t('offline.removeContinue') : t('offline.keepWaiting');
   m.classList.add('active');
 }
 function hideOfflineModal(){ const m=document.getElementById('offline-modal'); if(m) m.classList.remove('active'); }
@@ -796,14 +787,14 @@ function renderLobby(){
     const me = p.id===myKey, host = p.id===view.hostId;
     box.insertAdjacentHTML('beforeend',
       `<div class="pcard"><span class="pdot"></span><span class="pname">${esc(p.name)}</span>
-       ${host?'<span class="ptag">Host</span>':''}${me?'<span class="ptag me">You</span>':''}</div>`);
+       ${host?`<span class="ptag">${t('ptag.host')}</span>`:''}${me?`<span class="ptag me">${t('ptag.you')}</span>`:''}</div>`);
   });
   const startBtn = document.getElementById('lobby-start'), hint = document.getElementById('lobby-hint');
   if(isHost){
     startBtn.style.display = 'block';
     const ok = view.players.length >= 2; startBtn.disabled = !ok;
-    hint.textContent = ok ? 'Enough players — ready to start!' : 'Waiting for players… (at least 2)';
-  } else { startBtn.style.display = 'none'; hint.textContent = 'Waiting for host to start…'; }
+    hint.textContent = ok ? t('lobby.ready') : t('lobby.waitPlayers');
+  } else { startBtn.style.display = 'none'; hint.textContent = t('lobby.waitHost'); }
 }
 
 function renderGame(){
@@ -816,8 +807,8 @@ function renderGame(){
   const pill = document.getElementById('turn-pill');
   pill.classList.toggle('mine', isMyTurn && !revealing);
   const cdHtml = (!revealing && view.secondsLeft!=null) ? ` <span id="cd-num" class="cd">${view.paused?'⏸':view.secondsLeft}</span>` : '';
-  if(revealing){ pill.classList.remove('mine'); pill.innerHTML = '🎲 Reveal!'; }
-  else pill.innerHTML = (isMyTurn ? 'Your turn to call' : `Waiting for <b>${esc(caller?caller.name:'')}</b>`) + cdHtml;
+  if(revealing){ pill.classList.remove('mine'); pill.innerHTML = t('game.reveal'); }
+  else pill.innerHTML = (isMyTurn ? t('game.yourTurn') : `${t('game.waitingPre')}<b>${esc(caller?caller.name:'')}</b>`) + cdHtml;
 
   // 對手
   const opps = document.getElementById('opps'); opps.innerHTML='';
@@ -833,7 +824,7 @@ function renderGame(){
     opps.insertAdjacentHTML('beforeend',
       `<div class="opp ${active?'active':''} ${p.count===0?'dead':''} ${off?'offline':''}">
          <div class="on">${esc(p.name)}${p.id===view.hostId?' 👑':''}</div>
-         <div class="oc">${off?'<span class="off">Offline</span>':p.count+' left'}</div>${dice}
+         <div class="oc">${off?`<span class="off">${t('opp.offline')}</span>`:t('opp.left', {n:p.count})}</div>${dice}
        </div>`);
   });
 
@@ -841,11 +832,11 @@ function renderGame(){
   const banner = document.getElementById('reveal-banner');
   if(revealing && view.lastCall){
     const c = CALLS[view.lastCall];
-    banner.innerHTML = `Called: <b style="color:var(--gold)">${c.label} (${c.sub})</b>` + (view.oneHitKill ? ' <span class="kill">One-Hit Kill!</span>' : '');
+    banner.innerHTML = t('reveal.called', {label:`<b style="color:var(--gold)">${callText(c)}`, sub:`${c.sub}</b>`}) + (view.oneHitKill ? ` <span class="kill">${t('kill.inline')}</span>` : '');
   } else banner.innerHTML='';
 
   // 自己的骰子：calling 用全視窗 3D 擲骰；revealing 用靜態（含被拿掉的）
-  document.getElementById('my-label').textContent = revealing ? 'Your dice (revealed)' : 'Your dice';
+  document.getElementById('my-label').textContent = revealing ? t('game.yourDiceRevealed') : t('game.yourDice');
   const myBox = document.getElementById('my-dice');
   const vals = (me && me.dice) ? me.dice : [];
   if(revealing){
@@ -865,38 +856,35 @@ function renderGame(){
   const calls = document.getElementById('calls'), wait = document.getElementById('wait');
   if(isMyTurn && !revealing){
     calls.style.display='grid'; wait.style.display='none';
-    if(!calls.dataset.built){
-      calls.innerHTML = CALL_ORDER.map(k=>{ const c=CALLS[k];
-        return `<button class="call ${c.cls}" onclick="Net.sendCall('${k}')"><b>${c.label}</b><span class="cs">${c.sub}</span></button>`; }).join('');
-      calls.dataset.built='1';
-    }
+    calls.innerHTML = CALL_ORDER.map(k=>{ const c=CALLS[k];
+      return `<button class="call ${c.cls}" onclick="Net.sendCall('${k}')"><b>${callText(c)}</b><span class="cs">${c.sub}</span></button>`; }).join('');
   } else {
     calls.style.display='none'; wait.style.display='block';
-    wait.textContent = revealing ? 'Revealing… remove the matching dice' : `Waiting for ${caller?caller.name:''} to call…`;
+    wait.textContent = revealing ? t('game.revealing') : t('game.waitingCall', {name:caller?caller.name:''});
   }
 }
 
 function renderOver(){
   const losers = (view.losers||[]).map(id => view.players.find(p=>p.id===id)).filter(Boolean);
-  document.getElementById('kill-wrap').innerHTML = view.oneHitKill ? '<span class="kill-badge">⚡ One-Hit Kill ⚡</span>' : '';
+  document.getElementById('kill-wrap').innerHTML = view.oneHitKill ? `<span class="kill-badge">${t('kill.badge')}</span>` : '';
   document.getElementById('over-loser').textContent = losers.length ? losers.map(p=>p.name).join('、') : '—';
   const cups = view.penalty || 1;
-  document.getElementById('over-penalty').innerHTML = `Drink <span class="cups">${cups}</span> cup(s)${view.oneHitKill?' (×2!)':''} 🍺`;
+  document.getElementById('over-penalty').innerHTML = t('over.penalty', {cups:`<span class="cups">${cups}</span>`, x2:view.oneHitKill?t('over.x2'):''}) + ' 🍺';
   const next = view.players.find(p=>p.id===view.nextStarterId);
-  document.getElementById('over-next').textContent = next ? `${next.name} starts the next game` : '';
+  document.getElementById('over-next').textContent = next ? t('over.nextStarter', {name:next.name}) : '';
   const rematch = document.getElementById('over-rematch'), hint = document.getElementById('over-hint');
-  if(isHost){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='You start the next game'; }
-  else { rematch.style.display='none'; hint.textContent='Waiting for host to start the next game…'; }
+  if(isHost){ rematch.style.display='block'; rematch.disabled=false; hint.textContent=t('over.hostStarts'); }
+  else { rematch.style.display='none'; hint.textContent=t('over.waitHostNext'); }
 }
 
 function renderAborted(){
   document.getElementById('kill-wrap').innerHTML='';
-  document.getElementById('over-loser').textContent = 'Game interrupted';
+  document.getElementById('over-loser').textContent = t('aborted.title');
   document.getElementById('over-penalty').innerHTML = '';
   document.getElementById('over-next').textContent = view.message || '';
   const rematch = document.getElementById('over-rematch'), hint = document.getElementById('over-hint');
-  if(isHost && view.players.length>=2){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='You can restart'; }
-  else { rematch.style.display='none'; hint.textContent = isHost ? 'Not enough players, waiting for others' : 'Waiting for host…'; }
+  if(isHost && view.players.length>=2){ rematch.style.display='block'; rematch.disabled=false; hint.textContent=t('aborted.canRestart'); }
+  else { rematch.style.display='none'; hint.textContent = isHost ? t('aborted.notEnough') : t('aborted.waitHost'); }
 }
 
 function updateCountdown(sec, paused){
@@ -1187,6 +1175,7 @@ const Cover = (() => {
 window.addEventListener('DOMContentLoaded', () => {
   myKey = getKey();
   UI.buildDicePick();
+  applyStaticI18n();
   Cover.init();
   Dice3D.init();
   document.getElementById('rules').addEventListener('click', e=>{ if(e.target.id==='rules') UI.closeRules(); });
