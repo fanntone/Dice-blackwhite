@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>紅黑大小單雙 · 骰子對決</title>
+<title>Dice Duel · Red Black Big Small Odd Even</title>
 <style>
   :root{
     --bg:#0d0a12; --panel:rgba(22,16,28,.82); --panel2:rgba(30,22,40,.92);
@@ -195,74 +195,74 @@
 
   <!-- HOME -->
   <section id="screen-home" class="screen active">
-    <h1 class="title" style="margin-top:12px">紅黑<br>大小單雙</h1>
-    <p class="subtitle">骰 子 對 決</p>
+    <h1 class="title" style="margin-top:12px">DICE<br>DUEL</h1>
+    <p class="subtitle">RED · BLACK · BIG · SMALL</p>
     <div class="spacer"></div>
     <div class="stack">
-      <button class="btn" onclick="UI.go('create')">🎲 建立房間</button>
-      <button class="btn ghost" onclick="UI.go('join')">🔗 加入房間</button>
-      <button class="btn ghost" onclick="UI.openRules()">📖 遊戲規則</button>
+      <button class="btn" onclick="UI.go('create')">🎲 Create Room</button>
+      <button class="btn ghost" onclick="UI.go('join')">🔗 Join Room</button>
+      <button class="btn ghost" onclick="UI.openRules()">📖 How to Play</button>
     </div>
-    <p class="badge-mini">2～3 人連線對戰 · 手機友善 · 請適量飲酒，禁止酒駕</p>
+    <p class="badge-mini">2–3 players online · mobile-friendly · please drink responsibly</p>
   </section>
 
   <!-- CREATE -->
   <section id="screen-create" class="screen">
-    <h1 class="title" style="font-size:32px">建立房間</h1>
+    <h1 class="title" style="font-size:32px">Create Room</h1>
     <div class="panel stack">
-      <label class="fld">你的暱稱
-        <input id="create-name" maxlength="8" placeholder="例如：阿明" />
+      <label class="fld">Your nickname
+        <input id="create-name" maxlength="8" placeholder="e.g. Alex" />
       </label>
-      <label class="fld">每人初始骰子數
+      <label class="fld">Dice per player
         <div class="row" id="dice-pick"></div>
       </label>
       <p class="err" id="create-err"></p>
-      <button class="btn" onclick="Net.createRoom()">建立並進入</button>
-      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">返回</button>
+      <button class="btn" onclick="Net.createRoom()">Create & Enter</button>
+      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">Back</button>
     </div>
   </section>
 
   <!-- JOIN -->
   <section id="screen-join" class="screen">
-    <h1 class="title" style="font-size:32px">加入房間</h1>
+    <h1 class="title" style="font-size:32px">Join Room</h1>
     <div class="panel stack">
-      <label class="fld">你的暱稱
-        <input id="join-name" maxlength="8" placeholder="例如：小美" />
+      <label class="fld">Your nickname
+        <input id="join-name" maxlength="8" placeholder="e.g. Sam" />
       </label>
-      <label class="fld">房間代碼
+      <label class="fld">Room code
         <input id="join-code" class="code" maxlength="4" placeholder="ABCD" />
       </label>
       <p class="err" id="join-err"></p>
-      <button class="btn" id="join-btn" onclick="Net.joinRoom()">加入</button>
-      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">返回</button>
+      <button class="btn" id="join-btn" onclick="Net.joinRoom()">Join</button>
+      <button class="btn ghost sm" style="width:100%" onclick="UI.go('home')">Back</button>
     </div>
   </section>
 
   <!-- LOBBY -->
   <section id="screen-lobby" class="screen">
-    <p class="subtitle">房間代碼</p>
+    <p class="subtitle">Room Code</p>
     <div class="roomcode" id="lobby-code">----</div>
     <div class="row" style="max-width:300px">
-      <button class="btn gold sm" style="width:100%" onclick="Net.share()">分享邀請</button>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.copyCode()">複製代碼</button>
+      <button class="btn gold sm" style="width:100%" onclick="Net.share()">Share Invite</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.copyCode()">Copy Code</button>
     </div>
     <div class="panel">
-      <p class="fld" style="margin:0 0 10px">玩家（<span id="lobby-count">0</span>/3）</p>
+      <p class="fld" style="margin:0 0 10px">Players (<span id="lobby-count">0</span>/3)</p>
       <div class="plist" id="lobby-players"></div>
     </div>
     <div class="stack">
-      <button class="btn" id="lobby-start" onclick="Net.startGameClick()">開始遊戲</button>
-      <p class="hint" id="lobby-hint">等待玩家加入…（至少 2 人）</p>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">離開房間</button>
+      <button class="btn" id="lobby-start" onclick="Net.startGameClick()">Start Game</button>
+      <p class="hint" id="lobby-hint">Waiting for players… (at least 2)</p>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
     </div>
   </section>
 
   <!-- GAME -->
   <section id="screen-game" class="screen" style="justify-content:flex-start;gap:14px;padding-top:8px">
     <div class="topbar">
-      <button class="btn ghost sm" onclick="UI.openRules()">規則</button>
+      <button class="btn ghost sm" onclick="UI.openRules()">Rules</button>
       <div class="turnpill" id="turn-pill">—</div>
-      <button class="btn ghost sm" onclick="Net.leave()">離開</button>
+      <button class="btn ghost sm" onclick="Net.leave()">Leave</button>
     </div>
 
     <div class="opps" id="opps"></div>
@@ -270,7 +270,7 @@
     <div class="reveal-banner" id="reveal-banner"></div>
 
     <div class="myarea">
-      <h3 id="my-label">你的骰子</h3>
+      <h3 id="my-label">Your dice</h3>
       <div class="dicewrap" id="my-dice" style="display:none"></div>
     </div>
 
@@ -283,14 +283,14 @@
   <!-- GAME OVER -->
   <section id="screen-over" class="screen">
     <div id="kill-wrap"></div>
-    <p class="subtitle">本局輸家</p>
+    <p class="subtitle">Loser</p>
     <div class="loser-name" id="over-loser">—</div>
     <p class="penalty" id="over-penalty"></p>
     <p class="hint" id="over-next"></p>
     <div class="stack">
-      <button class="btn" id="over-rematch" onclick="Net.rematchClick()">再來一局</button>
+      <button class="btn" id="over-rematch" onclick="Net.rematchClick()">Play Again</button>
       <p class="hint" id="over-hint"></p>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">離開房間</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
     </div>
   </section>
 
@@ -300,33 +300,33 @@
 <div id="rules" class="modal">
   <div class="panel rules">
     <button class="close-x" onclick="UI.closeRules()">×</button>
-    <h2>紅黑大小單雙</h2>
-    <p class="hint" style="text-align:left">骰子顏色：<span class="tag red">紅 = 1、4</span> <span class="tag">黑 = 2、3、5、6</span></p>
+    <h2>How to Play</h2>
+    <p class="hint" style="text-align:left">Dice colors: <span class="tag red">Red = 1, 4</span> <span class="tag">Black = 2, 3, 5, 6</span></p>
     <ol>
-      <li>起始玩家看完自己的骰子後，從六種喊法擇一：
+      <li>The starting player looks at their dice, then picks one of six calls:
         <div>
-          <span class="tag red">紅的拿掉</span><span class="tag">黑的拿掉</span>
-          <span class="tag">大的拿掉(4 5 6)</span><span class="tag">小的拿掉(1 2 3)</span>
-          <span class="tag">單數拿掉(1 3 5)</span><span class="tag">雙數拿掉(2 4 6)</span>
+          <span class="tag red">Remove Red</span><span class="tag">Remove Black</span>
+          <span class="tag">Remove Big (4 5 6)</span><span class="tag">Remove Small (1 2 3)</span>
+          <span class="tag">Remove Odd (1 3 5)</span><span class="tag">Remove Even (2 4 6)</span>
         </div>
       </li>
-      <li>喊完後全部玩家「開盅」，依指示拿掉符合的骰子（<b>包含喊者本人</b>）。</li>
-      <li>剩餘骰子放回重新骰動，由下一位玩家重複同樣動作。</li>
-      <li>直到有玩家骰子被拿光 → 該玩家為<b>輸家</b>。</li>
-      <li>若<b>開局第一次喊牌</b>就有人被拿光 → <span style="color:var(--red2);font-weight:900">一擊必殺</span>，懲罰兩倍！</li>
-      <li>若同時 2 家以上輸掉，依順序<b>最後一家</b>為下一場開局玩家。</li>
+      <li>After the call, everyone reveals and removes the matching dice(<b>including the caller</b>).</li>
+      <li>Put remaining dice back, re-roll, and the next player repeats.</li>
+      <li>When a player runs out of dice → that player <b>loses</b>.</li>
+      <li>If someone is wiped out on the <b>opening round's first call</b> → <span style="color:var(--red2);font-weight:900">One-Hit Kill</span>, double penalty!</li>
+      <li>If 2+ players lose at once, the <b>last one</b> in order starts the next game.</li>
     </ol>
-    <p class="hint">請適量飲酒 · 未滿18歲禁止飲酒 · 酒後不開車</p>
+    <p class="hint">Please drink responsibly · 18+ only · don't drink and drive</p>
   </div>
 </div>
 
 <div id="offline-modal" class="modal">
   <div class="panel" style="max-width:420px;text-align:center">
-    <h2 style="color:var(--gold);margin:.2em 0;font-size:22px">⚠️ 玩家離線</h2>
+    <h2 style="color:var(--gold);margin:.2em 0;font-size:22px">⚠️ Player Offline</h2>
     <p id="off-text" class="hint" style="font-size:15px;line-height:1.6"></p>
     <div class="stack" style="margin-top:16px">
-      <button class="btn" id="off-continue" onclick="Net.offlineContinue()">繼續等待</button>
-      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">離開房間</button>
+      <button class="btn" id="off-continue" onclick="Net.offlineContinue()">Keep Waiting</button>
+      <button class="btn ghost sm" style="width:100%" onclick="Net.leave()">Leave Room</button>
     </div>
   </div>
 </div>
@@ -334,8 +334,8 @@
 <div id="reconnect" class="reconnect">
   <div class="rc-box">
     <div class="rc-spinner"></div>
-    <div class="rc-text">重新連線中…</div>
-    <button class="btn ghost sm" onclick="Net.leave()">返回首頁</button>
+    <div class="rc-text">Reconnecting…</div>
+    <button class="btn ghost sm" onclick="Net.leave()">Back to Home</button>
   </div>
 </div>
 
@@ -352,12 +352,12 @@
 
 /* -------------------- 遊戲核心（純函式） -------------------- */
 const CALLS = {
-  red:   { key:'red',   label:'紅的拿掉', sub:'1、4',     cls:'red',   test:v => v===1||v===4 },
-  black: { key:'black', label:'黑的拿掉', sub:'2 3 5 6',  cls:'black', test:v => !(v===1||v===4) },
-  big:   { key:'big',   label:'大的拿掉', sub:'4 5 6',    cls:'',      test:v => v>=4 },
-  small: { key:'small', label:'小的拿掉', sub:'1 2 3',    cls:'',      test:v => v<=3 },
-  odd:   { key:'odd',   label:'單數拿掉', sub:'1 3 5',    cls:'',      test:v => v%2===1 },
-  even:  { key:'even',  label:'雙數拿掉', sub:'2 4 6',    cls:'',      test:v => v%2===0 },
+  red:   { key:'red',   label:'Remove Red', sub:'1, 4',     cls:'red',   test:v => v===1||v===4 },
+  black: { key:'black', label:'Remove Black', sub:'2 3 5 6',  cls:'black', test:v => !(v===1||v===4) },
+  big:   { key:'big',   label:'Remove Big', sub:'4 5 6',    cls:'',      test:v => v>=4 },
+  small: { key:'small', label:'Remove Small', sub:'1 2 3',    cls:'',      test:v => v<=3 },
+  odd:   { key:'odd',   label:'Remove Odd', sub:'1 3 5',    cls:'',      test:v => v%2===1 },
+  even:  { key:'even',  label:'Remove Even', sub:'2 4 6',    cls:'',      test:v => v%2===0 },
 };
 const CALL_ORDER = ['red','black','big','small','odd','even'];
 const REVEAL_MS = 3200;
@@ -527,7 +527,7 @@ const Net = {
   /* ---- 建立 / 還原 / 接手 房主 ---- */
   createRoom(){
     const name=(document.getElementById('create-name').value||'').trim();
-    if(!name) return UI.err('create-err','請輸入暱稱');
+    if(!name) return UI.err('create-err','Please enter a nickname');
     myName=name; isHost=true; leaving=false; roomCode='';
     UI.err('create-err',''); Net._spawnHost(0, null, false);
   },
@@ -536,7 +536,7 @@ const Net = {
     const onCreate = document.getElementById('screen-create').classList.contains('active');
     if(attempt > 8){
       if(snap || keepG){ isHost=false; saveSession({roomCode,name:myName,role:'client'}); Net._startClientPeer(); return; } // 接手/還原失敗 → 改當玩家
-      if(onCreate) UI.err('create-err','無法建立房間，請稍後再試'); return;
+      if(onCreate) UI.err('create-err','Could not create room, please try again'); return;
     }
     if(!roomCode) roomCode = Net.genCode();
     try{ if(peer) peer.destroy(); }catch(e){}
@@ -569,7 +569,7 @@ const Net = {
         if(!snap && !keepG) roomCode = '';
         try{ peer.destroy(); }catch(_){}
         setTimeout(() => Net._spawnHost(attempt+1, snap, keepG), 700);
-      } else if(onCreate){ UI.err('create-err','連線錯誤：' + e.type); }
+      } else if(onCreate){ UI.err('create-err','Connection error: ' + e.type); }
     });
   },
   _wireHost(){
@@ -584,7 +584,7 @@ const Net = {
     const _p = playerByConn(c.peer); if(_p) _p.lastSeen = Date.now();   // 任何訊息都算心跳
     if(msg.type === 'hb') return;
     if(msg.type === 'join'){
-      const key = msg.key, name = (msg.name||'玩家').slice(0,8);
+      const key = msg.key, name = (msg.name||'Player').slice(0,8);
       const existing = key && G.players.find(p=>p.key===key);
       if(existing){
         const wasOff = !existing.connected;
@@ -593,8 +593,8 @@ const Net = {
         if(wasOff && G.phase!=='lobby') Net._notice('online', existing.name);
         return;
       }
-      if(G.phase !== 'lobby') return c.send({ type:'reject', reason:'遊戲進行中，暫時無法加入' });
-      if(G.players.length >= 3) return c.send({ type:'reject', reason:'房間已滿（最多 3 人）' });
+      if(G.phase !== 'lobby') return c.send({ type:'reject', reason:'Game in progress, cannot join now' });
+      if(G.players.length >= 3) return c.send({ type:'reject', reason:'Room is full (max 3 players)' });
       G.players.push({ key, name, connId:c.peer, connected:true, lastSeen:Date.now(), dice:[], count:0, removed:null });
       conns.set(c.peer, c); pushState();
     } else if(msg.type === 'call'){
@@ -614,7 +614,7 @@ const Net = {
   _notice(kind, name){
     const payload = { type:'notice', kind, name };
     conns.forEach(c => { try{ c.send(payload); }catch(e){} });
-    if(kind==='offline') showOfflineModal(name); else { hideOfflineModal(); UI.toast(name+' 已重新連線'); }
+    if(kind==='offline') showOfflineModal(name); else { hideOfflineModal(); UI.toast(name+' reconnected'); }
   },
 
   /* 離線後「繼續」：房主移除離線者並續局；人數不足回大廳 */
@@ -641,8 +641,8 @@ const Net = {
   joinRoom(){
     const name=(document.getElementById('join-name').value||'').trim();
     const code=(document.getElementById('join-code').value||'').trim().toUpperCase();
-    if(!name) return UI.err('join-err','請輸入暱稱');
-    if(code.length!==4) return UI.err('join-err','請輸入 4 位房間代碼');
+    if(!name) return UI.err('join-err','Please enter a nickname');
+    if(code.length!==4) return UI.err('join-err','Please enter the 4-letter room code');
     UI.err('join-err',''); document.getElementById('join-btn').disabled=true;
     myName=name; isHost=false; roomCode=code; leaving=false; reconnectTries=0;
     saveSession({ roomCode, name, role:'client' });
@@ -655,7 +655,7 @@ const Net = {
       try{ if(conn && conn.open) conn.send({type:'hb'}); }catch(e){}   // 回送心跳給房主
       if(Date.now() - lastHostMsg > 6000){          // 6 秒沒收到房主訊息 → 視為房主消失
         lastHostMsg = Date.now() + 1e9;             // 暫停重複觸發
-        showReconnect(true, '與房主失去連線，重新連線中…');
+        showReconnect(true, 'Lost connection to host, reconnecting…');
         try{ if(conn) conn.close(); }catch(e){}
         Net._startClientPeer();                     // 重連；房主真的不見 → 觸發接手
       }
@@ -681,8 +681,8 @@ const Net = {
     if(leaving || isHost) return;
     if(!view){                                    // 尚未成功進房（初次加入）
       reconnectTries++;
-      if(reconnectTries >= 5){ UI.err('join-err','找不到房間（網路阻擋或代碼錯誤）'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; return; }
-      UI.err('join-err', '連線中…（重試 '+reconnectTries+'/5）');
+      if(reconnectTries >= 5){ UI.err('join-err','Room not found (network blocked or wrong code)'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; return; }
+      UI.err('join-err', 'Connecting… (retry '+reconnectTries+'/5)');
       setTimeout(() => { if(!leaving) Net._startClientPeer(); }, 1600);
     } else {                                       // 曾在房內 → 房主可能離線
       if(e && e.type==='peer-unavailable') Net._onHostGone();
@@ -692,7 +692,7 @@ const Net = {
   _clientLost(){
     if(leaving || isHost) return;
     if(view && view.phase==='gameover') return;
-    showReconnect(true, '連線中斷，重新連線中…');
+    showReconnect(true, 'Connection lost, reconnecting…');
     Net._scheduleReconnect();
   },
   _scheduleReconnect(){
@@ -705,10 +705,10 @@ const Net = {
     if(!msg || !msg.type) return;
     lastHostMsg = Date.now();                      // 任何房主訊息都算心跳
     if(msg.type==='hb') return;
-    if(msg.type==='reject'){ UI.err('join-err', msg.reason||'無法加入'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; UI.go('join'); return; }
+    if(msg.type==='reject'){ UI.err('join-err', msg.reason||'Couldn\'t join'); Net._resetJoinBtn(); clearSession(); leaving=true; try{peer.destroy();}catch(_){}; UI.go('join'); return; }
     if(msg.type==='state'){ Net._resetJoinBtn(); reconnectTries=0; showReconnect(false); applyView(msg.state); }
     if(msg.type==='tick'){ if(view){ view.secondsLeft=msg.secondsLeft; view.paused=msg.paused; } updateCountdown(msg.secondsLeft, msg.paused); }
-    if(msg.type==='notice'){ if(msg.kind==='offline') showOfflineModal(msg.name); else { hideOfflineModal(); UI.toast(msg.name+' 已重新連線'); } }
+    if(msg.type==='notice'){ if(msg.kind==='offline') showOfflineModal(msg.name); else { hideOfflineModal(); UI.toast(msg.name+' reconnected'); } }
   },
 
   /* ---- 房主離線 → 自動指派新房主（host migration） ---- */
@@ -718,14 +718,14 @@ const Net = {
     const others = view.players.map(p=>p.id).filter(id=>id!==view.hostId).sort();
     const successor = others[0];
     if(successor === myKey) Net._promoteToHost();
-    else { showReconnect(true, '房主已離線，指派新房主中…'); Net._scheduleReconnect(); }
+    else { showReconnect(true, 'Host left, assigning a new host…'); Net._scheduleReconnect(); }
   },
   _promoteToHost(){
     if(isHost || !view) return;
     isHost=true; clearTimeout(reconnectTimer); clearInterval(hostWatch); hostWatch=null;
     try{ if(conn) conn.close(); }catch(e){} try{ if(peer) peer.destroy(); }catch(e){}
     peer=conn=null; conns=new Map();
-    showReconnect(true, '你成為新房主，接手中…');
+    showReconnect(true, 'You are the new host, taking over…');
     const v=view, callerKey=v.callerId;
     G = { phase:(v.phase==='revealing'?'calling':v.phase), startDice:v.startDice||5,
       players: v.players.map(p=>({ key:p.id, name:p.name, connId:null, connected:(p.id===myKey), dice:[], count:p.count||0, removed:null })),
@@ -735,7 +735,7 @@ const Net = {
     let ci = G.players.findIndex(p=>p.key===callerKey); if(ci<0) ci = G.players.findIndex(p=>p.key===myKey); G.callerIndex = ci<0?0:ci;
     if(G.phase==='calling'){ G.players.forEach(p=>{ if(!p.count) p.count=G.startDice; p.dice=rollN(p.count); }); G.secondsLeft=TURN_SECONDS; }
     saveSession({ roomCode, name:myName, role:'host' });
-    UI.toast('你已成為新房主');
+    UI.toast('You are now the host');
     Net._spawnHost(0, null, true);              // keepG：用現有 G 接手同房號
   },
 
@@ -745,11 +745,11 @@ const Net = {
   rematchClick(){ if(isHost) hostStartGame(G.nextStarterId); },
   share(){
     const url = location.origin + location.pathname + '?room=' + roomCode;
-    const data = { title:'紅黑大小單雙', text:`一起來玩骰子對決！房間代碼：${roomCode}`, url };
+    const data = { title:'Dice Duel', text:`Come play Dice Duel! Room code: ${roomCode}`, url };
     if(navigator.share){ navigator.share(data).catch(()=>{}); }
-    else { navigator.clipboard?.writeText(url); UI.toast('已複製邀請連結'); }
+    else { navigator.clipboard?.writeText(url); UI.toast('Invite link copied'); }
   },
-  copyCode(){ navigator.clipboard?.writeText(roomCode); UI.toast('已複製代碼 ' + roomCode); },
+  copyCode(){ navigator.clipboard?.writeText(roomCode); UI.toast('Code copied: ' + roomCode); },
   leave(){
     leaving=true; clearTimeout(reconnectTimer); clearInterval(hbTimer); clearInterval(hostWatch);
     if(isHost) hostStopTimer();
@@ -766,8 +766,8 @@ const Net = {
 
 function showOfflineModal(name){
   const m=document.getElementById('offline-modal'); if(!m) return;
-  m.querySelector('#off-text').textContent = `「${name}」已離線，可能正在重新連線中。`;
-  m.querySelector('#off-continue').textContent = isHost ? '移除並繼續' : '繼續等待';
+  m.querySelector('#off-text').textContent = `"${name}" went offline and may be reconnecting.`;
+  m.querySelector('#off-continue').textContent = isHost ? 'Remove & Continue' : 'Keep Waiting';
   m.classList.add('active');
 }
 function hideOfflineModal(){ const m=document.getElementById('offline-modal'); if(m) m.classList.remove('active'); }
@@ -796,14 +796,14 @@ function renderLobby(){
     const me = p.id===myKey, host = p.id===view.hostId;
     box.insertAdjacentHTML('beforeend',
       `<div class="pcard"><span class="pdot"></span><span class="pname">${esc(p.name)}</span>
-       ${host?'<span class="ptag">房主</span>':''}${me?'<span class="ptag me">你</span>':''}</div>`);
+       ${host?'<span class="ptag">Host</span>':''}${me?'<span class="ptag me">You</span>':''}</div>`);
   });
   const startBtn = document.getElementById('lobby-start'), hint = document.getElementById('lobby-hint');
   if(isHost){
     startBtn.style.display = 'block';
     const ok = view.players.length >= 2; startBtn.disabled = !ok;
-    hint.textContent = ok ? '人數足夠，隨時可開始！' : '等待玩家加入…（至少 2 人）';
-  } else { startBtn.style.display = 'none'; hint.textContent = '等待房主開始遊戲…'; }
+    hint.textContent = ok ? 'Enough players — ready to start!' : 'Waiting for players… (at least 2)';
+  } else { startBtn.style.display = 'none'; hint.textContent = 'Waiting for host to start…'; }
 }
 
 function renderGame(){
@@ -816,8 +816,8 @@ function renderGame(){
   const pill = document.getElementById('turn-pill');
   pill.classList.toggle('mine', isMyTurn && !revealing);
   const cdHtml = (!revealing && view.secondsLeft!=null) ? ` <span id="cd-num" class="cd">${view.paused?'⏸':view.secondsLeft}</span>` : '';
-  if(revealing){ pill.classList.remove('mine'); pill.innerHTML = '🎲 開盅！'; }
-  else pill.innerHTML = (isMyTurn ? '輪到你喊牌' : `等待 <b>${esc(caller?caller.name:'')}</b>`) + cdHtml;
+  if(revealing){ pill.classList.remove('mine'); pill.innerHTML = '🎲 Reveal!'; }
+  else pill.innerHTML = (isMyTurn ? 'Your turn to call' : `Waiting for <b>${esc(caller?caller.name:'')}</b>`) + cdHtml;
 
   // 對手
   const opps = document.getElementById('opps'); opps.innerHTML='';
@@ -833,7 +833,7 @@ function renderGame(){
     opps.insertAdjacentHTML('beforeend',
       `<div class="opp ${active?'active':''} ${p.count===0?'dead':''} ${off?'offline':''}">
          <div class="on">${esc(p.name)}${p.id===view.hostId?' 👑':''}</div>
-         <div class="oc">${off?'<span class="off">離線</span>':'剩 '+p.count+' 顆'}</div>${dice}
+         <div class="oc">${off?'<span class="off">Offline</span>':p.count+' left'}</div>${dice}
        </div>`);
   });
 
@@ -841,11 +841,11 @@ function renderGame(){
   const banner = document.getElementById('reveal-banner');
   if(revealing && view.lastCall){
     const c = CALLS[view.lastCall];
-    banner.innerHTML = `喊「<b style="color:var(--gold)">${c.label}（${c.sub}）</b>」` + (view.oneHitKill ? ' <span class="kill">一擊必殺！</span>' : '');
+    banner.innerHTML = `Called: <b style="color:var(--gold)">${c.label} (${c.sub})</b>` + (view.oneHitKill ? ' <span class="kill">One-Hit Kill!</span>' : '');
   } else banner.innerHTML='';
 
   // 自己的骰子：calling 用全視窗 3D 擲骰；revealing 用靜態（含被拿掉的）
-  document.getElementById('my-label').textContent = revealing ? '你的骰子（開盅）' : '你的骰子';
+  document.getElementById('my-label').textContent = revealing ? 'Your dice (revealed)' : 'Your dice';
   const myBox = document.getElementById('my-dice');
   const vals = (me && me.dice) ? me.dice : [];
   if(revealing){
@@ -872,31 +872,31 @@ function renderGame(){
     }
   } else {
     calls.style.display='none'; wait.style.display='block';
-    wait.textContent = revealing ? '開盅中…依指示拿掉骰子' : `等待 ${caller?caller.name:''} 出招…`;
+    wait.textContent = revealing ? 'Revealing… remove the matching dice' : `Waiting for ${caller?caller.name:''} to call…`;
   }
 }
 
 function renderOver(){
   const losers = (view.losers||[]).map(id => view.players.find(p=>p.id===id)).filter(Boolean);
-  document.getElementById('kill-wrap').innerHTML = view.oneHitKill ? '<span class="kill-badge">⚡ 一擊必殺 ⚡</span>' : '';
+  document.getElementById('kill-wrap').innerHTML = view.oneHitKill ? '<span class="kill-badge">⚡ One-Hit Kill ⚡</span>' : '';
   document.getElementById('over-loser').textContent = losers.length ? losers.map(p=>p.name).join('、') : '—';
   const cups = view.penalty || 1;
-  document.getElementById('over-penalty').innerHTML = `罰 <span class="cups">${cups}</span> 杯${view.oneHitKill?'（兩倍！）':''} 🍺`;
+  document.getElementById('over-penalty').innerHTML = `Drink <span class="cups">${cups}</span> cup(s)${view.oneHitKill?' (×2!)':''} 🍺`;
   const next = view.players.find(p=>p.id===view.nextStarterId);
-  document.getElementById('over-next').textContent = next ? `下一局由 ${next.name} 開局` : '';
+  document.getElementById('over-next').textContent = next ? `${next.name} starts the next game` : '';
   const rematch = document.getElementById('over-rematch'), hint = document.getElementById('over-hint');
-  if(isHost){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='由你開始下一局'; }
-  else { rematch.style.display='none'; hint.textContent='等待房主開始下一局…'; }
+  if(isHost){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='You start the next game'; }
+  else { rematch.style.display='none'; hint.textContent='Waiting for host to start the next game…'; }
 }
 
 function renderAborted(){
   document.getElementById('kill-wrap').innerHTML='';
-  document.getElementById('over-loser').textContent = '遊戲中斷';
+  document.getElementById('over-loser').textContent = 'Game interrupted';
   document.getElementById('over-penalty').innerHTML = '';
   document.getElementById('over-next').textContent = view.message || '';
   const rematch = document.getElementById('over-rematch'), hint = document.getElementById('over-hint');
-  if(isHost && view.players.length>=2){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='可重新開始'; }
-  else { rematch.style.display='none'; hint.textContent = isHost ? '人數不足，請等待玩家加入' : '等待房主…'; }
+  if(isHost && view.players.length>=2){ rematch.style.display='block'; rematch.disabled=false; hint.textContent='You can restart'; }
+  else { rematch.style.display='none'; hint.textContent = isHost ? 'Not enough players, waiting for others' : 'Waiting for host…'; }
 }
 
 function updateCountdown(sec, paused){
@@ -911,7 +911,7 @@ function showReconnect(show, text){
   el.classList.toggle('active', !!show);
 }
 
-/* 一顆骰子的 HTML（紅 = 1、4） */
+/* 一顆骰子的 HTML（Red = 1, 4） */
 const PIP_MAP = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,3,6,2,5,8] };
 function dieHTML(v, small, removed){
   const cells = Array(9).fill('<span></span>');
@@ -1143,7 +1143,7 @@ const Cover = (() => {
       bg.material.uniforms.map.value = tex; bg.material.uniforms.texel.value.set(1/iw,1/ih); bg.visible = true;
       fg.material.uniforms.map.value = tex; fg.visible = true;
       resize();
-    }, undefined, () => { console.info('找不到 cover.jpg：把三人合照存成同資料夾 cover.jpg。'); });
+    }, undefined, () => { console.info('cover.jpg not found: save the group photo as cover.jpg in this folder.'); });
 
     addEventListener('pointermove', e=>{ pointer.tx=(e.clientX/innerWidth*2-1); pointer.ty=(e.clientY/innerHeight*2-1); });
     addEventListener('deviceorientation', e=>{ if(e.gamma!=null){ pointer.tx=Math.max(-1,Math.min(1,e.gamma/35)); pointer.ty=Math.max(-1,Math.min(1,(e.beta-45)/35)); } });
@@ -1197,12 +1197,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const room = new URLSearchParams(location.search).get('room');
   if(sess && sess.role==='host'){
     roomCode = sess.roomCode;
-    showReconnect(true, '重新建立房間中…');
+    showReconnect(true, 'Recreating room…');
     Net._restoreHost(loadHostState(sess.roomCode), sess.name);
     setTimeout(()=>showReconnect(false), 1200);
   } else if(sess && sess.role==='client'){
     myName = sess.name; roomCode = sess.roomCode; isHost = false;
-    showReconnect(true, '重新加入牌局中…');
+    showReconnect(true, 'Rejoining game…');
     Net._startWatchdog(); Net._startClientPeer();
   } else if(room){
     UI.go('join'); document.getElementById('join-code').value = room.toUpperCase().slice(0,4);
