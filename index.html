@@ -147,11 +147,32 @@
       background:rgba(0,0,0,.35);font-weight:900;font-variant-numeric:tabular-nums;}
   .turnpill.mine .cd{background:rgba(0,0,0,.25);}
   .cd.low{background:var(--red);color:#fff;animation:pulse .7s infinite;}
-  /* 擲骰畫布 */
-  /* 全視窗 3D 擲骰覆蓋層（不擋點擊） */
-  #dice3d{position:fixed;inset:0;width:100%;height:100%;z-index:3;display:block;
-      pointer-events:none;opacity:0;transition:opacity .2s;}
+  /* 全視窗 CSS-3D 擲骰覆蓋層（不擋點擊） */
+  #dice3d{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .25s;
+      perspective:820px;perspective-origin:50% 42%;overflow:hidden;}
   #dice3d.show{opacity:1;}
+  .d3-wrap{position:absolute;left:50%;top:0;width:64px;height:64px;margin-left:-32px;
+      transform-style:preserve-3d;transform-origin:50% 100%;will-change:transform;}
+  .d3-shadow{position:absolute;left:50%;top:0;width:60px;height:15px;margin-left:-30px;border-radius:50%;
+      background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);will-change:transform,opacity;}
+  .d3-tilt{position:absolute;width:64px;height:64px;transform-style:preserve-3d;
+      transform:rotateZ(-16deg) rotateX(-56deg) rotateY(12deg);}
+  .d3-cube{position:absolute;width:64px;height:64px;transform-style:preserve-3d;will-change:transform;}
+  .d3-face{position:absolute;width:64px;height:64px;border-radius:12px;display:grid;padding:10px;gap:2px;
+      background:linear-gradient(135deg,#fffdf6 0%,#efe7d5 55%,#dccfb6 100%);
+      box-shadow:inset 0 0 10px rgba(0,0,0,.22),inset 0 0 2px rgba(255,255,255,.65);}
+  .d3-pip{width:11px;height:11px;border-radius:50%;align-self:center;justify-self:center;
+      background:radial-gradient(circle at 35% 30%,#5b5560,#1a1620 70%);box-shadow:inset 0 -1px 2px rgba(0,0,0,.4);}
+  .d3-face.red .d3-pip{background:radial-gradient(circle at 35% 30%,#ff7d7d,#d8263a 70%);}
+  .d3-f1{grid-template-areas:". . ." ". a ." ". . .";} .d3-f1 .d3-pip{grid-area:a;}
+  .d3-f2{grid-template-areas:"a . ." ". . ." ". . b";} .d3-f2 .d3-pip:nth-child(1){grid-area:a} .d3-f2 .d3-pip:nth-child(2){grid-area:b}
+  .d3-f3{grid-template-areas:"a . ." ". b ." ". . c";} .d3-f3 .d3-pip:nth-child(1){grid-area:a} .d3-f3 .d3-pip:nth-child(2){grid-area:b} .d3-f3 .d3-pip:nth-child(3){grid-area:c}
+  .d3-f4{grid-template-areas:"a . b" ". . ." "c . d";} .d3-f4 .d3-pip:nth-child(1){grid-area:a} .d3-f4 .d3-pip:nth-child(2){grid-area:b} .d3-f4 .d3-pip:nth-child(3){grid-area:c} .d3-f4 .d3-pip:nth-child(4){grid-area:d}
+  .d3-f5{grid-template-areas:"a . b" ". e ." "c . d";} .d3-f5 .d3-pip:nth-child(1){grid-area:a} .d3-f5 .d3-pip:nth-child(2){grid-area:b} .d3-f5 .d3-pip:nth-child(3){grid-area:c} .d3-f5 .d3-pip:nth-child(4){grid-area:d} .d3-f5 .d3-pip:nth-child(5){grid-area:e}
+  .d3-f6{grid-template-areas:"a . b" "c . d" "e . f";} .d3-f6 .d3-pip:nth-child(1){grid-area:a} .d3-f6 .d3-pip:nth-child(2){grid-area:b} .d3-f6 .d3-pip:nth-child(3){grid-area:c} .d3-f6 .d3-pip:nth-child(4){grid-area:d} .d3-f6 .d3-pip:nth-child(5){grid-area:e} .d3-f6 .d3-pip:nth-child(6){grid-area:f}
+  .d3-f1{transform:rotateY(0deg) translateZ(32px);}   .d3-f6{transform:rotateY(180deg) translateZ(32px);}
+  .d3-f3{transform:rotateY(90deg) translateZ(32px);}  .d3-f4{transform:rotateY(-90deg) translateZ(32px);}
+  .d3-f5{transform:rotateX(90deg) translateZ(32px);}  .d3-f2{transform:rotateX(-90deg) translateZ(32px);}
   /* 離線玩家 */
   .opp.offline{opacity:.55;border-style:dashed;}
   .oc .off{color:var(--red2);font-weight:800;}
@@ -168,7 +189,7 @@
 </head>
 <body>
 <canvas id="cover"></canvas>
-<canvas id="dice3d"></canvas>
+<div id="dice3d"></div>
 
 <div id="app">
 
@@ -901,128 +922,101 @@ function dieHTML(v, small, removed){
 function esc(s){ return (s+'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* ===================================================================
-   擲骰 3D 動畫（three.js 全視窗）：從外側投入 → 翻滾 → 互撞 → 撞邊框數次 → 停下
+   擲骰動畫（CSS 3D 立方體，參考 EOS DICE 範例）
+   每顆骰子：從上方墜落 → 撞左右邊框反彈 → 多次落地彈跳 + 壓扁 → 轉到目標點數
+   旋轉用單條 easeOutCubic 曲線精準停在該面（不跳幀），最後排成一排好讀
    =================================================================== */
 const Dice3D = (() => {
-  const canvas = document.getElementById('dice3d');
-  let renderer, scene, camera, geo, raf=null, running=false, ok=false;
-  let dice=[], phase='idle', settle=0, rollStart=0;
-  let arena={ xmin:-5,xmax:5,ymin:-9,ymax:9,vW:10,vH:18 };
-  const FACE_VALS=[2,5,3,4,1,6];           // BoxGeometry 面序 [+X,-X,+Y,-Y,+Z,-Z] 對應點數
-  const VALQ={}; const tmpQ=new THREE.Quaternion();
+  const root = document.getElementById('dice3d');
+  let dice=[], raf=null, running=false;
+  const FACE_ROT={1:{x:90,y:0},2:{x:180,y:0},3:{x:90,y:-90},4:{x:90,y:90},5:{x:0,y:0},6:{x:-90,y:0}};
+  const easeOutCubic=t=>1-Math.pow(1-t,3), easeOutQuad=t=>1-(1-t)*(1-t);
+  const DUR=2000, STAGGER=85, HIT1=0.30, HIT2=0.66;
+  const segs=[{p0:.20,p1:.44,h:130},{p0:.44,p1:.64,h:55},{p0:.64,p1:.81,h:22},{p0:.81,p1:.92,h:8},{p0:.92,p1:1,h:0}];
+  let restY=320, size=56, base=1;
 
-  function rr(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
-  function pipTex(v){
-    const s=128,c=document.createElement('canvas'); c.width=c.height=s; const x=c.getContext('2d');
-    x.fillStyle='#f7f2e6'; rr(x,6,6,s-12,s-12,22); x.fill();
-    x.fillStyle=(v===1||v===4)?'#d8263a':'#1a1620';
-    const pos={1:[[.5,.5]],2:[[.27,.27],[.73,.73]],3:[[.27,.27],[.5,.5],[.73,.73]],
-      4:[[.27,.27],[.73,.27],[.27,.73],[.73,.73]],5:[[.27,.27],[.73,.27],[.5,.5],[.27,.73],[.73,.73]],
-      6:[[.27,.25],[.27,.5],[.27,.75],[.73,.25],[.73,.5],[.73,.75]]}[v];
-    pos.forEach(p=>{ x.beginPath(); x.arc(p[0]*s,p[1]*s,12,0,7); x.fill(); });
-    const t=new THREE.CanvasTexture(c); t.anisotropy=4; return t;
-  }
-  function makeDie(){ return new THREE.Mesh(geo, FACE_VALS.map(v=>new THREE.MeshStandardMaterial({ map:pipTex(v), roughness:.5, metalness:0 }))); }
-  function calcValQ(){
-    const N={0:[1,0,0],1:[-1,0,0],2:[0,1,0],3:[0,-1,0],4:[0,0,1],5:[0,0,-1]}, zp=new THREE.Vector3(0,0,1);
-    for(let v=1;v<=6;v++){ const fi=FACE_VALS.indexOf(v); VALQ[v]=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(...N[fi]), zp); }
-  }
-  function rndQ(){ return new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.random()*6.28,Math.random()*6.28,Math.random()*6.28)); }
-
-  function _init(){
-    if(!canvas) return;
-    renderer=new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
-    if(THREE.sRGBEncoding) renderer.outputEncoding=THREE.sRGBEncoding;
-    scene=new THREE.Scene();
-    camera=new THREE.PerspectiveCamera(45,1,0.1,100); camera.position.set(0,0,9);
-    scene.add(new THREE.AmbientLight(0xffffff,0.85));
-    const k=new THREE.DirectionalLight(0xffffff,0.95); k.position.set(3,5,7); scene.add(k);
-    const f=new THREE.DirectionalLight(0x88aaff,0.3); f.position.set(-4,-3,4); scene.add(f);
-    geo=new THREE.BoxGeometry(1,1,1); calcValQ(); resize(); addEventListener('resize',resize);
-    ok=true;
-  }
-  function resize(){
-    if(!renderer) return; const w=innerWidth,h=innerHeight; renderer.setSize(w,h); camera.aspect=w/h; camera.updateProjectionMatrix();
-    const t=Math.tan(camera.fov*Math.PI/360), vH=2*t*camera.position.z, vW=vH*camera.aspect;
-    arena={ xmin:-vW/2, xmax:vW/2, ymin:-vH/2, ymax:vH/2, vW, vH };
-  }
-  function setShow(on){ if(canvas) canvas.classList.toggle('show', !!on); }
-  function ensureLoop(){ if(ok && running && !raf) loop(); }
-
-  function spawn(values){
-    dice.forEach(d=>scene.remove(d.mesh)); dice=[];
-    const n=values.length; if(!n) return 0;
-    const sz=Math.max(0.5, Math.min(1.6, (arena.vW*0.9)/(n + (n-1)*0.4)));   // 一排剛好放得下
-    for(let i=0;i<n;i++){
-      const mesh=makeDie(); mesh.scale.setScalar(sz); scene.add(mesh);
-      const top=Math.random()<0.5;
-      const d={ mesh, value:values[i], size:sz,
-        x:(Math.random()*2-1)*arena.vW*0.35,
-        y: top ? arena.ymax+sz : (Math.random()*2-1)*arena.vH*0.32,
-        vx:(Math.random()*2-1)*0.55, vy: top ? -(0.5+Math.random()*0.45) : (Math.random()*2-1)*0.6,
-        axis:new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize(),
-        spin:0.28+Math.random()*0.4, q:rndQ(), sx:0,sy:0,sq:null,tq:null,tx:0,ty:0,t:0 };
-      mesh.position.set(d.x,d.y,0); mesh.quaternion.copy(d.q); dice.push(d);
+  function makeDie(value){
+    const wrap=document.createElement('div'); wrap.className='d3-wrap';
+    const tilt=document.createElement('div'); tilt.className='d3-tilt';
+    const cube=document.createElement('div'); cube.className='d3-cube';
+    for(let v=1;v<=6;v++){
+      const f=document.createElement('div'); f.className='d3-face d3-f'+v+((v===1||v===4)?' red':'');
+      for(let k=0;k<v;k++){ const s=document.createElement('span'); s.className='d3-pip'; f.appendChild(s); }
+      cube.appendChild(f);
     }
-    return sz;
+    tilt.appendChild(cube); wrap.appendChild(tilt);
+    const shadow=document.createElement('div'); shadow.className='d3-shadow';
+    return { wrap, cube, shadow, value };
   }
+  function layout(n){
+    restY = innerHeight*0.42;
+    size = Math.max(38, Math.min(64, (innerWidth*0.9 - (n-1)*10)/n));
+    base = size/64;
+  }
+  function clearDOM(){ dice.forEach(d=>{ d.wrap.remove(); d.shadow.remove(); }); dice=[]; }
+  function slots(n){ const gap=size*0.2, total=n*size+(n-1)*gap; return { gap, x0:-total/2+size/2, step:size+gap }; }
+
   function roll(values){
-    if(!ok) return; if(!values||!values.length){ clear(); return; }
-    setShow(true); spawn(values); phase='rolling'; settle=0; rollStart=performance.now(); running=true; ensureLoop();
+    if(!root || !values || !values.length){ clear(); return; }
+    setShow(true); clearDOM(); layout(values.length);
+    const n=values.length, S=slots(n), t0=performance.now();
+    values.forEach((v,i)=>{
+      const d=makeDie(v);
+      d.slotX=S.x0+i*S.step; d.dir=Math.random()<0.5?1:-1; d.W=innerWidth/2 - size*0.8;
+      const t=FACE_ROT[v];
+      d.ex=t.x; d.sx=t.x-360*(3+(Math.random()<.5?0:1));
+      d.ey=t.y; d.sy=t.y-360*(3+(Math.random()<.5?0:1));
+      d.ez=0;  d.sz=-720*d.dir;
+      d.t0=t0+i*STAGGER; d.lastSeg=-1; d.floorAt=-1; d.wallAt=-1; d.wallHits=0;
+      root.appendChild(d.shadow); root.appendChild(d.wrap);
+      update(d,0,t0); dice.push(d);
+    });
+    running=true; if(!raf) raf=requestAnimationFrame(loop);
   }
   function showStatic(values){
-    if(!ok) return; if(!values||!values.length){ clear(); return; }
-    setShow(true); const sz=spawn(values);
-    const n=dice.length, gap=sz*0.4, total=n*sz+(n-1)*gap; let x0=-total/2+sz/2;
-    dice.forEach((d,i)=>{ d.x=x0+i*(sz+gap); d.y=0; d.q.copy(VALQ[d.value]); d.mesh.position.set(d.x,d.y,0); d.mesh.quaternion.copy(d.q); });
-    phase='rest'; running=true; ensureLoop();
+    if(!root || !values || !values.length){ clear(); return; }
+    setShow(true); clearDOM(); layout(values.length);
+    const n=values.length, S=slots(n);
+    values.forEach((v,i)=>{
+      const d=makeDie(v), x=S.x0+i*S.step, t=FACE_ROT[v];
+      d.cube.style.transform=`rotateX(${t.x}deg) rotateY(${t.y}deg) rotateZ(0deg)`;
+      d.wrap.style.transform=`translate3d(${x}px, ${restY}px, 0) scale(${base})`;
+      d.shadow.style.transform=`translate3d(${x}px, ${restY+size*0.9}px, 0) scale(${base})`;
+      d.shadow.style.opacity='0.5';
+      root.appendChild(d.shadow); root.appendChild(d.wrap); dice.push(d);
+    });
+    running=false;
   }
-  function gatherInit(){
-    const n=dice.length, sz=dice[0].size, gap=sz*0.4, total=n*sz+(n-1)*gap; let x0=-total/2+sz/2;
-    dice.forEach((d,i)=>{ d.sx=d.x; d.sy=d.y; d.sq=d.q.clone(); d.tx=x0+i*(sz+gap); d.ty=0; d.tq=VALQ[d.value].clone(); d.t=0; });
-    phase='gather';
+  function update(d,p,now){
+    const re=easeOutCubic(p);
+    d.cube.style.transform=`rotateX(${d.sx+(d.ex-d.sx)*re}deg) rotateY(${d.sy+(d.ey-d.sy)*re}deg) rotateZ(${d.sz+(d.ez-d.sz)*re}deg)`;
+    const DROP_H=restY+120;
+    let y=0;
+    if(p<0.20){ const q=p/0.20; y=DROP_H*(1-q*q); }
+    else for(const s of segs){ if(p>=s.p0&&p<=s.p1){ const q=(p-s.p0)/(s.p1-s.p0); y=s.h*base*4*q*(1-q);
+      const idx=segs.indexOf(s); if(idx!==d.lastSeg){ d.lastSeg=idx; d.floorAt=now; } break; } }
+    let x;
+    if(p<HIT1){ x=d.dir*d.W*(p/HIT1); }
+    else if(p<HIT2){ if(d.wallHits<1){d.wallHits=1;d.wallAt=now;} x=d.dir*d.W - 2*d.dir*d.W*((p-HIT1)/(HIT2-HIT1)); }
+    else { if(d.wallHits<2){d.wallHits=2;d.wallAt=now;} x=(-d.dir*d.W)+(d.slotX-(-d.dir*d.W))*easeOutQuad((p-HIT2)/(1-HIT2)); }
+    const fSq=d.floorAt>0?0.16*Math.exp(-(now-d.floorAt)/75):0, wSq=d.wallAt>0?0.18*Math.exp(-(now-d.wallAt)/75):0;
+    d.wrap.style.transform=`translate3d(${x}px, ${restY-y}px, 0) scale(${(1+fSq*0.6-wSq)*base},${(1-fSq+wSq*0.4)*base})`;
+    const air=Math.min(y/160,1);
+    d.shadow.style.transform=`translate3d(${x}px, ${restY+size*0.9}px, 0) scale(${(1.1-air*0.6)*base})`;
+    d.shadow.style.opacity=String(0.5-air*0.4);
   }
-  function step(){
-    let mx=0;
+  function loop(now){
+    let any=false;
     for(const d of dice){
-      d.x+=d.vx; d.y+=d.vy; d.vx*=0.976; d.vy*=0.976; const r=d.size*0.5;
-      if(d.x<arena.xmin+r){ d.x=arena.xmin+r; d.vx=Math.abs(d.vx)*0.62; d.spin+=0.05; }
-      if(d.x>arena.xmax-r){ d.x=arena.xmax-r; d.vx=-Math.abs(d.vx)*0.62; d.spin+=0.05; }
-      if(d.y<arena.ymin+r){ d.y=arena.ymin+r; d.vy=Math.abs(d.vy)*0.62; d.spin+=0.05; }
-      if(d.y>arena.ymax-r){ d.y=arena.ymax-r; d.vy=-Math.abs(d.vy)*0.62; }
-      d.spin*=0.985; tmpQ.setFromAxisAngle(d.axis,d.spin); d.q.premultiply(tmpQ);
-      d.mesh.position.set(d.x,d.y,0); d.mesh.quaternion.copy(d.q);
+      if(now<d.t0){ any=true; update(d,0,now); continue; }
+      const p=Math.min((now-d.t0)/DUR,1); if(p<1) any=true; update(d,p,now);
     }
-    for(let i=0;i<dice.length;i++) for(let j=i+1;j<dice.length;j++){
-      const a=dice[i],b=dice[j]; let dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy)||0.001; const min=(a.size+b.size)*0.55;
-      if(dist<min){ const nx=dx/dist,ny=dy/dist,ov=(min-dist)/2; a.x-=nx*ov;a.y-=ny*ov;b.x+=nx*ov;b.y+=ny*ov;
-        const p=(b.vx*nx+b.vy*ny)-(a.vx*nx+a.vy*ny); a.vx+=p*nx;a.vy+=p*ny;b.vx-=p*nx;b.vy-=p*ny; a.spin+=0.03;b.spin+=0.03; } }
-    for(const d of dice){ mx=Math.max(mx, Math.hypot(d.vx,d.vy)+d.spin); }
-    return mx;
+    raf = (any && running) ? requestAnimationFrame(loop) : null;
   }
-  function loop(){
-    raf=requestAnimationFrame(loop);
-    if(!running){ cancelAnimationFrame(raf); raf=null; return; }
-    if(phase==='rolling'){ const ms=step();
-      if(performance.now()-rollStart > 2600) gatherInit();       // 最多翻滾 2.6 秒就收攏
-      else if(ms<0.16){ if(++settle>8) gatherInit(); } else settle=0; }
-    else if(phase==='gather'){
-      let done=true;
-      for(const d of dice){ d.t=Math.min(1,d.t+0.09); const e=1-Math.pow(1-d.t,3);
-        d.x=d.sx+(d.tx-d.sx)*e; d.y=d.sy+(d.ty-d.sy)*e; d.q.copy(d.sq).slerp(d.tq,e);
-        d.mesh.position.set(d.x,d.y,0); d.mesh.quaternion.copy(d.q); if(d.t<1) done=false; }
-      if(done) phase='rest';
-    }
-    renderer.render(scene,camera);
-  }
-  function clear(){ dice.forEach(d=>scene&&scene.remove(d.mesh)); dice=[]; if(renderer) renderer.render(scene,camera); }
-  function hide(){ running=false; setShow(false); }
-
-  return {
-    init(){ try{ _init(); }catch(e){ ok=false; console.warn('Dice3D init failed', e); } },
-    roll, showStatic, clear, hide, isOk(){ return ok; },
-  };
+  function setShow(on){ if(root) root.classList.toggle('show',!!on); }
+  function clear(){ clearDOM(); }
+  function hide(){ running=false; if(raf){ cancelAnimationFrame(raf); raf=null; } setShow(false); }
+  return { init(){}, roll, showStatic, clear, hide, isOk(){ return true; } };
 })();
 
 /* ===================================================================
